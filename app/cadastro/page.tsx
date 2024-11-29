@@ -1,7 +1,9 @@
+import { FormCadastro } from "@/components/_my_components/FormCadastro";
+
 const CadastroPage = () => {
   return (
-    <div>
-      <h1>Cadastro</h1>
+    <div className="flex justify-center items-center content-center flex-col h-full ">      
+      <FormCadastro />
     </div>
   );
 };
