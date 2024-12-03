@@ -16,8 +16,10 @@ import {
     FormMessage,
   } from "@/components/ui/form";
 import { Input } from '../ui/input';
+import {loginAction} from '@/app/login/loginAction';
+import userLogin from '@/app/login/userLogin';
 
-type FormData = z.infer<typeof authSchema>;
+type formData = z.infer<typeof authSchema>;
 
 export const FormLogin = () => {
 
@@ -29,9 +31,8 @@ export const FormLogin = () => {
         },
       });    
 
-    const onSubmit = (data: FormData) => {
-        console.log(data);
-        
+    const onSubmit = (data: formData) => {
+        userLogin(data.email, data.password);        
     }
     
     return (
@@ -63,7 +64,7 @@ export const FormLogin = () => {
                     <FormItem>
                     <FormLabel>Senha</FormLabel>
                     <FormControl>
-                        <Input type='password' {...field} />
+                        <Input type='password' {...field} placeholder='******' />
                     </FormControl>
                     <FormDescription>
                         

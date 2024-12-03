@@ -57,7 +57,8 @@
 import { Button } from "@/components/ui/button"; // ShadCN Button
 import Link from "next/link";
 
-const NaveBar = () => {
+const NaveBar = (userName: any) => {
+
   return (
     <header className="fixed top-0 w-full bg-background border-b border-gray-200 dark:border-gray-700 z-50">
       <div className="container mx-auto px-4 flex justify-between items-center h-16">
@@ -94,7 +95,7 @@ const NaveBar = () => {
         <div className="flex items-center space-x-4">
           {/* Login/Register */}
           <Button asChild>
-            <Link href="/login">Login</Link>
+            <Link href="/login">{userName || null}</Link>
           </Button>
 
           {/* Mobile Menu Button
