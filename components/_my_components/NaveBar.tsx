@@ -56,8 +56,13 @@
 
 import { Button } from "@/components/ui/button"; // ShadCN Button
 import Link from "next/link";
+import userLogout from "@/app/login/userLogout";
 
-const NaveBar = (userName: any) => {
+type NaveBarProps = {
+  userName: string;
+};
+
+const NaveBar = ({userName}: NaveBarProps) => {
 
   return (
     <header className="fixed top-0 w-full bg-background border-b border-gray-200 dark:border-gray-700 z-50">
@@ -94,7 +99,7 @@ const NaveBar = (userName: any) => {
         {/* Actions */}
         <div className="flex items-center space-x-4">
           {/* Login/Register */}
-          <Button asChild>
+          <Button asChild onClick={async () => await userLogout()}>
             <Link href="/login">{userName || null}</Link>
           </Button>
 

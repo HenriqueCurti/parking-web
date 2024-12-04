@@ -16,8 +16,8 @@ import {
     FormMessage,
   } from "@/components/ui/form";
 import { Input } from '../ui/input';
-import {loginAction} from '@/app/login/loginAction';
 import userLogin from '@/app/login/userLogin';
+import { signIn } from '@/auth';
 
 type formData = z.infer<typeof authSchema>;
 
@@ -31,15 +31,25 @@ export const FormLogin = () => {
         },
       });    
 
-    const onSubmit = (data: formData) => {
-        userLogin(data.email, data.password);        
+    const onSubmit = async (data: formData) => {
+        await userLogin(data.email, data.password);        
     }
     
     return (
         <div className='w-2/5 space-y-2 p-8 bg-gray-800 rounded-lg'>
             <p className='flex justify-center items-center text-8'>Login</p>
             <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="border border-gray-200 dark:border-gray-700 space-y-4 p-8 bg-gray-800 rounded-lg">                          
+            <form 
+                // action={async (formData) =>
+                // {                                        
+                //     console.log("Clique Submit");
+                    
+                //     console.log(formData);                    
+                //     await signIn("credentials", formData)
+                // }
+                // }
+                onSubmit={form.handleSubmit(onSubmit)} 
+                className="border border-gray-200 dark:border-gray-700 space-y-4 p-8 bg-gray-800 rounded-lg">                          
                 <FormField
                 control={form.control}
                 name="email"

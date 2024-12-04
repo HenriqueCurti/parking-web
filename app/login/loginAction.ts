@@ -1,5 +1,3 @@
-import db from "@/lib/db";
-
 type User = {
     id: string,
     email: string,
@@ -35,9 +33,12 @@ export async function loginAction (email: string, password: string) : Promise <U
     }
 
     console.log(user);
+
+    console.log("Validando senha");
+    
     
 
-    const isAuthTrue = user.email === email;
+    const isAuthTrue = user.password === password;
 
     if(!isAuthTrue){
         return null
