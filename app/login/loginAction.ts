@@ -5,11 +5,7 @@ type User = {
 };
 
 export async function loginAction (email: string, password: string) : Promise <User | null> {
-
     console.log("==== Login Action ====");
-
-    console.log(email);
-    console.log(password);         
 
     if(!email || !password){
         return null;      
@@ -30,13 +26,7 @@ export async function loginAction (email: string, password: string) : Promise <U
 
     if(!user){
         return null       
-    }
-
-    console.log(user);
-
-    console.log("Validando senha");
-    
-    
+    }      
 
     const isAuthTrue = user.password === password;
 

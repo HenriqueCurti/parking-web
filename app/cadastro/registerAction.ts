@@ -1,20 +1,22 @@
+'use server'
+
 import { formSchema } from "@/src/schemas/formSchema";
 import { hashSync} from 'bcrypt-ts'
 import { z } from "zod";
 import db from "@/lib/db";
 
-type FormData = z.infer<typeof formSchema>;
+type formData = z.infer<typeof formSchema>;
 
-export default async function registerAction (form: FormData){ 
-    
+export default async function registerAction (_prevState: any, form: formData){     
     console.log("=== Action Register User ===")
-    
-    
+        
     if(!form.name || !form.email || !form.password){
-        throw new Error('Todos os dados devem ser preenchidos!');
+        return {
+            error: 'Todos os dados devem ser preenchidos!'
+        } 
     }
 
-    const user = await db.user.findUnique({
+    const user = await db.user.findFirst({
         where: {
             email: form.email
         } 
@@ -25,21 +27,16 @@ export default async function registerAction (form: FormData){
     }
 
     try {
-
-        console.log(form.email);
-
-        await db.user.create({
+        const res = await db.user.create({
             data: {
                 name: form.email,
                 email: form.email,
-                password: hashSync(form.password)
+                passhashed: hashSync(form.password)
             }
         })
+
+        return res.id;
     } catch (error) {
         console.log(error);        
-    }
-
-    
-
-
+    }   
 }

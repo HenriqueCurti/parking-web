@@ -18,10 +18,14 @@ import {
 import { Input } from '../ui/input';
 import userLogin from '@/app/login/userLogin';
 import { signIn } from '@/auth';
+import { useActionState } from 'react';
+import registerAction from '@/app/cadastro/registerAction';
 
 type formData = z.infer<typeof authSchema>;
 
 export const FormLogin = () => {
+
+    const [state, formeAction, isPending] = useActionState(registerAction, null);
 
     const form = useForm<z.infer<typeof authSchema>>({
         resolver: zodResolver(authSchema),

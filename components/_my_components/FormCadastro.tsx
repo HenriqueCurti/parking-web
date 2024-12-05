@@ -17,10 +17,13 @@ import {
     FormMessage,
   } from "@/components/ui/form";
 import { Input } from '../ui/input';
+import { useActionState } from 'react';
 
 type FormData = z.infer<typeof formSchema>;
 
 export const FormCadastro = () => {
+
+   const [state, formAction, isPending] = useActionState(registerAction, null)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -32,14 +35,14 @@ export const FormCadastro = () => {
       });    
 
     const onSubmit = async (data: FormData) => {        
-        await registerAction(data)
+        await registerAction(null, data)
     }
     
     return (
         <div className='w-2/5 space-y-4 p-8 bg-gray-800 rounded-lg'>
           <p className='flex justify-center items-center text-8'>Registro</p>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="border border-gray-200 dark:border-gray-700 space-y-4 p-8 rounded-lg">            
+            <form onSubmit={onSubmit} className="border border-gray-200 dark:border-gray-700 space-y-4 p-8 rounded-lg">            
               <FormField
                 control={form.control}
                 name="name"

@@ -13,9 +13,135 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
+model Garage {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(191)
+  active       Boolean        @default(true)
+  createdAt    DateTime?      @db.Date
+  updatedAt    DateTime?      @db.Date
+  vacancies    Vacancy[]
+  addresses    GarageAddress?
+  userGarage   UserGarage[]
+  reservations Reservation[]
+}
+
+model VehicleType {
+  id        Int       @id @default(autoincrement())
+  describe  String    @db.VarChar(191)
+  active    Boolean   @default(true)
+  createdAt DateTime? @db.Date
+  updatedAt DateTime? @db.Date
+  vehicles  Vehicle[]
+  vacancies Vacancy[]
+}
+
+model Vehicle {
+  id            Int           @id @default(autoincrement())
+  describe      String?       @db.VarChar(191)
+  vehicleTypeId Int?
+  size          Int?
+  active        Boolean       @default(true)
+  createdAt     DateTime?     @db.Date
+  updatedAt     DateTime?     @db.Date
+  vehicleType   VehicleType?  @relation(fields: [vehicleTypeId], references: [id])
+  userVehicles  UserVehicle[]
+}
+
+model Vacancy {
+  garageId      Int
+  vehicleTypeId Int
+  amount        Int
+  price         Decimal     @db.Decimal(10, 2)
+  active        Boolean     @default(true)
+  createdAt     DateTime?   @db.Date
+  updatedAt     DateTime?   @db.Date
+  garage        Garage      @relation(fields: [garageId], references: [id])
+  vehicleType   VehicleType @relation(fields: [vehicleTypeId], references: [id])
+
+  @@id([garageId, vehicleTypeId])
+}
+
+model UserType {
+  id        Int       @id @default(autoincrement())
+  describe  String?   @db.VarChar(191)
+  level     Int
+  active    Boolean   @default(true)
+  createdAt DateTime? @db.Date
+  updatedAt DateTime? @db.Date
+  users     User[]
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  userTypeId   Int?
+  name         String?       @db.VarChar(191)
+  email        String        @unique @db.VarChar(191)
+  passhashed   String        @db.VarChar(191)
+  active       Boolean       @default(true)
+  createdAt    DateTime?     @db.Date
+  updatedAt    DateTime?     @db.Date
+  userType     UserType?     @relation(fields: [userTypeId], references: [id])
+  userVehicles UserVehicle[]
+  userGarage   UserGarage[]
+  reservations Reservation[]
+}
+
+model UserVehicle {
+  id          Int           @id @default(autoincrement())
+  userId      Int
+  vehicleId   Int
+  year        DateTime?     @db.Date
+  color       String?       @db.VarChar(50)
+  plate       String?       @db.VarChar(50)
+  price       Decimal?      @db.Decimal(10, 2)
+  active      Boolean       @default(true)
+  createdAt   DateTime?     @db.Date
+  updatedAt   DateTime?     @db.Date
+  user        User          @relation(fields: [userId], references: [id])
+  vehicle     Vehicle       @relation(fields: [vehicleId], references: [id])
+  Reservation Reservation[]
+}
+
+model UserGarage {
+  userId    Int
+  garageId  Int
+  active    Boolean   @default(true)
+  createdAt DateTime? @db.Date
+  updatedAt DateTime? @db.Date
+  user      User      @relation(fields: [userId], references: [id])
+  garage    Garage    @relation(fields: [garageId], references: [id])
+
+  @@id([userId, garageId])
+}
+
+model Reservation {
+  id        Int         @id @default(autoincrement())
+  garageId  Int
+  vehicleId Int
+  userId    Int
+  checkin   DateTime    @db.Date
+  checkout  DateTime?   @db.Date
+  status    String      @db.VarChar(50)
+  amount    Decimal     @db.Decimal(10, 2)
+  active    Boolean     @default(true)
+  createdAt DateTime?   @db.Date
+  updatedAt DateTime?   @db.Date
+  garage    Garage      @relation(fields: [garageId], references: [id])
+  vehicle   UserVehicle @relation(fields: [vehicleId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
+}
+
+model GarageAddress {
+  garageId  Int       @id
+  cep       String?   @db.VarChar(20)
+  state     String?   @db.VarChar(50)
+  city      String?   @db.VarChar(100)
+  street    String?   @db.VarChar(100)
+  number    Int?
+  lat       String?   @db.VarChar(50)
+  long      String?   @db.VarChar(50)
+  active    Boolean   @default(true)
+  createdAt DateTime? @db.Date
+  updatedAt DateTime? @db.Date
+  garage    Garage    @relation(fields: [garageId], references: [id])
 }
