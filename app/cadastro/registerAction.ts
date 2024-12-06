@@ -7,23 +7,29 @@ import db from "@/lib/db";
 
 type formData = z.infer<typeof formSchema>;
 
-export default async function registerAction (_prevState: any, form: formData){     
+export default async function registerAction (form: formData){     
     console.log("=== Action Register User ===")
         
     if(!form.name || !form.email || !form.password){
         return {
-            error: 'Todos os dados devem ser preenchidos!'
+            success: false,
+            message: 'Todos os dados devem ser preenchidos!'
         } 
     }
 
-    const user = await db.user.findFirst({
-        where: {
-            email: form.email
-        } 
-    });
+    // const user = await db.user.findFirst({
+    //     where: {
+    //         email: form.email
+    //     } 
+    // });
+
+    const user = null;
 
     if(user){
-        throw new Error('Usuário já cadastrado!');
+        return {
+            success: false,
+            message: 'Usuário já cadastrado!'
+        } 
     }
 
     try {
@@ -35,8 +41,14 @@ export default async function registerAction (_prevState: any, form: formData){
             }
         })
 
-        return res.id;
+        return {
+            success: true,
+            message: ""
+        };
     } catch (error) {
-        console.log(error);        
+        return {
+            success: false,
+            message: "Ops, Algo inesperado aconteceu!"
+        }       
     }   
 }

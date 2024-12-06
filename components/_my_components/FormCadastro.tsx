@@ -17,13 +17,34 @@ import {
     FormMessage,
   } from "@/components/ui/form";
 import { Input } from '../ui/input';
-import { useActionState } from 'react';
+import { useState } from 'react';
+
+import { AlertCircle } from "lucide-react"
+ 
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
 
 type FormData = z.infer<typeof formSchema>;
 
 export const FormCadastro = () => {
 
-   const [state, formAction, isPending] = useActionState(registerAction, null)
+   //const [state, formAction, isPending] = useActionState(registerAction, null)
+
+   type DataReturn = {
+    success: boolean,
+    message: string
+   }
+
+   const initialState : DataReturn = {
+                                        success: true,
+                                        message : ""
+                                      };
+
+   const [response, setResponse] = useState(initialState);
+   const [isLoading, setIsLoading] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -34,15 +55,35 @@ export const FormCadastro = () => {
         },
       });    
 
-    const onSubmit = async (data: FormData) => {        
-        await registerAction(null, data)
+    const onSubmit = async (data: FormData) => {     
+        setIsLoading(true);   
+        setResponse(initialState);
+        const result = await registerAction(data);
+        setIsLoading(false)
+        setResponse(result);
     }
     
     return (
         <div className='w-2/5 space-y-4 p-8 bg-gray-800 rounded-lg'>
           <p className='flex justify-center items-center text-8'>Registro</p>
+          {isLoading && (
+            <div>
+              <p>
+                Carregando ...
+              </p>
+            </div>
+          )}
+          {response?.success == false && (
+            <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              {response.message}
+            </AlertDescription>
+          </Alert>
+          )}
           <Form {...form}>
-            <form onSubmit={onSubmit} className="border border-gray-200 dark:border-gray-700 space-y-4 p-8 rounded-lg">            
+            <form onSubmit={form.handleSubmit(onSubmit)} className="border border-gray-200 dark:border-gray-700 space-y-4 p-8 rounded-lg">            
               <FormField
                 control={form.control}
                 name="name"
