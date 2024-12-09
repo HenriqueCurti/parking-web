@@ -14,6 +14,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
+import { finalizarVaga } from '@/lib/db/vagas'
 
 export type Payment = {
     reservationId: number
@@ -33,23 +34,15 @@ export async function handleSubmit(value: any){
     const formattedDate = now.toISOString().slice(0, 19).replace("T", " ");
 
     const data = {
-        plate: value.original.plate,
-        garageId: value.original.garageId,
+        plate: value.plate as string,
+        garageId: value.garageId as string,
         userId: "1",
-        checkin: value.original.checkin,
-        checkout: formattedDate
+        checkin: value.checkin as string,
+        checkout: formattedDate as string
     };
     
     try {
-        await fetch('https://b3tecnologia.com/EstacionaAqui/postReserva.php', {            
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify(data),
-            method: "POST",
-            mode: "cors",
-            cache: "no-cache"
-        })
+        await finalizarVaga(data)
     } catch (error) {
         console.log(error);        
     }
@@ -130,7 +123,7 @@ export const columns: ColumnDef<Payment>[] = [
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={async () => await handleSubmit(row)}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={async () => await handleSubmit(row.original)}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

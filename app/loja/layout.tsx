@@ -19,9 +19,9 @@ export default async function LojaLayout({
 
   return (
     <section className="h-full">
-      <NaveBar userName={userName ?? ""} />
-      {children}
-      <FooterBar />
+        <NaveBar userName={userName ?? ""} />
+        {children}
+        <FooterBar /> 
     </section>
   );
 }

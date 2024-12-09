@@ -16,6 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { ButtonNewVehicle } from "@/components/_my_components/ButtonNewVehicle";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -45,15 +47,21 @@ export function DataTable<TData extends { plate?: string }, TValue>({
   return (
     <div className="rounded-md border">
       {/* Input para o filtro */}
-      <div className="p-4 text-gray-600">
-        <input
-          type="text"
-          placeholder="Buscar por placa"
-          value={filterText}
-          onChange={(e) => setFilterText(e.target.value)}
-          className="w-full border rounded-md p-2"
-        />
+      <div className="flex justify-evenly items-center">
+        <div className="p-4 text-gray-600 w-[90%]">
+          <input
+            type="text"
+            placeholder="Buscar por placa"
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+            className="w-full border rounded-md p-2"
+          />
+        </div> 
+        <div>
+          <ButtonNewVehicle/>
+        </div>
       </div>
+      
 
       {/* Tabela */}
       <div className="max-h-[400px] overflow-y-auto">
