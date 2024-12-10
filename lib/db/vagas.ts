@@ -5,7 +5,7 @@ export type finalizaVaga = {
     garageId: string,
     userId: string,
     checkin: string,
-    checkout: string
+    checkout: string | null
 }
 
 export async function getVagas(): Promise<Payment[]> {    

@@ -14,7 +14,9 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
-import { finalizarVaga } from '@/lib/db/vagas'
+import { handleFinalizarVaga } from './actionFinalizaVaga'
+import Spinner from '@/components/_my_components/Spinner'
+import { useState } from 'react'
 
 export type Payment = {
     reservationId: number
@@ -26,26 +28,6 @@ export type Payment = {
     reservationStatus: string
     userName: string
     userEmail: string
-}
-
-export async function handleSubmit(value: any){
-
-    const now = new Date()
-    const formattedDate = now.toISOString().slice(0, 19).replace("T", " ");
-
-    const data = {
-        plate: value.plate as string,
-        garageId: value.garageId as string,
-        userId: "1",
-        checkin: value.checkin as string,
-        checkout: formattedDate as string
-    };
-    
-    try {
-        await finalizarVaga(data)
-    } catch (error) {
-        console.log(error);        
-    }
 }
 
 export const columns: ColumnDef<Payment>[] = [
@@ -87,19 +69,39 @@ export const columns: ColumnDef<Payment>[] = [
     },
     {
         id: "acao",
-        header: "Ação",
-        cell: ({row}) => (                           
+        header: "Ação",             
+        cell: ({row}) => {
             
-            // <Button onClick={() => handleSubmit(row)} className='' >
-            //    Finalizar
-            // </Button>
+            const [isLoading, setIsLoading] = useState(false);
+
+            const handleClick = async () => {
+                setIsLoading(true);
+                try {
+                await handleFinalizarVaga(row.original);
+                // Sucesso: Você pode adicionar lógica para atualizar a tabela ou exibir uma mensagem
+                } catch (error) {
+                console.error("Erro ao finalizar vaga:", error);
+                } finally {
+                setIsLoading(false);
+                }
+            };
+
+            return (
+
             <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline">Finalizar</Button>
+        <Button variant="outline" disabled={isLoading}>{isLoading ? (
+              <div className="flex items-center">
+                <Spinner />
+                <span className="ml-2">Processando...</span>
+              </div>
+            ) : (
+              "Finalizar"
+            )}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Confirma a baixa do Veículo?</AlertDialogTitle>          
+          <AlertDialogTitle>Confirma a saída do veículo?</AlertDialogTitle>          
           <AlertDialogDescription asChild>
             <div className='flex flex-col'>
                 <div>
@@ -123,11 +125,18 @@ export const columns: ColumnDef<Payment>[] = [
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={async () => await handleSubmit(row.original)}>Continue</AlertDialogAction>
+          <AlertDialogAction disabled={isLoading} onClick={handleClick}>{isLoading ? (
+              <div className="flex items-center">
+                <Spinner />
+                <span className="ml-2">Processando...</span>
+              </div>
+            ) : (
+              "Continue"
+            )}</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-           
-        ) 
+            )
+        } 
     }
 ]
