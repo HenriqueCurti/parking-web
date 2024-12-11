@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 
 import {
   Select,
@@ -8,11 +8,22 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-export function SelectTypesVehicles() {
+type SelectTypesVehiclesProps = {
+  field: {
+    value: string;
+    onChange: (value: string) => void;
+    onBlur: () => void;
+  };
+};
+
+export function SelectTypesVehicles({ field }: SelectTypesVehiclesProps) {
   return (
-    <Select>
+    <Select
+      value={field.value}
+      onValueChange={field.onChange}
+    >
       <SelectTrigger>
         <SelectValue placeholder="Selecione o tipo de veículo" />
       </SelectTrigger>
@@ -21,10 +32,10 @@ export function SelectTypesVehicles() {
           <SelectLabel>Veículos</SelectLabel>
           <SelectItem value="1">Moto</SelectItem>
           <SelectItem value="2">Carro</SelectItem>
-          <SelectItem value="3">Caminhote</SelectItem>
+          <SelectItem value="3">Caminhonete</SelectItem>
           <SelectItem value="4">Caminhão</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
-  )
+  );
 }

@@ -14,15 +14,30 @@ datasource db {
 }
 
 model Garage {
-  id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar(191)
-  active       Boolean        @default(true)
-  createdAt    DateTime?      @db.Date
-  updatedAt    DateTime?      @db.Date
+  id           Int              @id @default(autoincrement())
+  name         String           @db.VarChar(191)
+  active       Boolean          @default(true)
+  createdAt    DateTime?        @db.Date
+  updatedAt    DateTime?        @db.Date
   vacancies    Vacancy[]
   addresses    GarageAddress?
   userGarage   UserGarage[]
   reservations Reservation[]
+  schedule     GarageSchedule[]
+}
+
+model GarageSchedule {
+  garageId   Int     @id
+  domingo    Boolean @default(false)
+  segunda    Boolean @default(true)
+  terca      Boolean @default(true)
+  quarta     Boolean @default(true)
+  quinta     Boolean @default(true)
+  sexta      Boolean @default(true)
+  sabado     Boolean @default(true)
+  abertura   String  @default("07:00")
+  fechamento String  @default("19:00")
+  garage     Garage  @relation(fields: [garageId], references: [id])
 }
 
 model VehicleType {
