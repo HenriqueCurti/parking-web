@@ -1,18 +1,19 @@
 'use client'
 
 import { ColumnDef } from '@tanstack/react-table'
+import { serviceType } from './configSchema'
 
-export type Vacancy = {
-    garageId: number | null
-    vehicleTypeId: number | null
-    descVehicleType: string
-    amount: number
-    price: number
-}
+// export type Vacancy = {
+//     garageId: string | null
+//     vehicleTypeId: string | null
+//     descVehicleType: string
+//     amount: string
+//     price: string
+// }
 
-export const columns: ColumnDef<Vacancy>[] = [
+export const columns: ColumnDef<serviceType>[] = [
     {
-        accessorKey: "descVehicleType",
+        accessorKey: "describe",
         header: "Tipo Veículo"
     },
     {

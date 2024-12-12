@@ -19,6 +19,8 @@ model Garage {
   active       Boolean          @default(true)
   createdAt    DateTime?        @db.Date
   updatedAt    DateTime?        @db.Date
+  abertura     String           @default("07:00")
+  fechamento   String           @default("19:00")
   vacancies    Vacancy[]
   addresses    GarageAddress?
   userGarage   UserGarage[]
@@ -27,17 +29,15 @@ model Garage {
 }
 
 model GarageSchedule {
-  garageId   Int     @id
-  domingo    Boolean @default(false)
-  segunda    Boolean @default(true)
-  terca      Boolean @default(true)
-  quarta     Boolean @default(true)
-  quinta     Boolean @default(true)
-  sexta      Boolean @default(true)
-  sabado     Boolean @default(true)
-  abertura   String  @default("07:00")
-  fechamento String  @default("19:00")
-  garage     Garage  @relation(fields: [garageId], references: [id])
+  garageId Int     @id
+  domingo  Boolean @default(false)
+  segunda  Boolean @default(true)
+  terca    Boolean @default(true)
+  quarta   Boolean @default(true)
+  quinta   Boolean @default(true)
+  sexta    Boolean @default(true)
+  sabado   Boolean @default(true)
+  garage   Garage  @relation(fields: [garageId], references: [id])
 }
 
 model VehicleType {
@@ -65,8 +65,8 @@ model Vehicle {
 model Vacancy {
   garageId      Int
   vehicleTypeId Int
-  amount        Int
-  price         Decimal     @db.Decimal(10, 2)
+  amount        Int?
+  price         Decimal?     @db.Decimal(10, 2)
   active        Boolean     @default(true)
   createdAt     DateTime?   @db.Date
   updatedAt     DateTime?   @db.Date
@@ -137,7 +137,7 @@ model Reservation {
   checkin   DateTime    @db.Date
   checkout  DateTime?   @db.Date
   status    String      @db.VarChar(50)
-  amount    Decimal     @db.Decimal(10, 2)
+  amount    Decimal?     @db.Decimal(10, 2)
   active    Boolean     @default(true)
   createdAt DateTime?   @db.Date
   updatedAt DateTime?   @db.Date

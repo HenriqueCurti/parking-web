@@ -1,19 +1,12 @@
 'use client'
 
-import { z } from "zod"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { SearchIcon } from "lucide-react";
-import { DialogFooter } from "../ui/dialog";
 import Spinner from "./Spinner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react"; 
+import { useEffect, useState } from "react"; 
 import { SelectTypesVehicles } from "./SelectTypesVehicles";
 import { DataTable } from "@/app/loja/configuracao/data-table";
 import { columns } from "@/app/loja/configuracao/columns";
-import { Vacancy } from "@/app/loja/configuracao/columns";
 import { ToggleDias } from "@/app/loja/configuracao/ToggleDias";
 import { Label } from "@radix-ui/react-label";
 import { Garagem } from "@/app/loja/configuracao/configSchema";
@@ -26,44 +19,21 @@ export default function FormConfig() {
         name:"",
         city:"",
         number:"",
-        schedules:[],
+        abertura: "",
+        encerramento: "",
+        schedules:[{
+            domingo: false,
+            segunda: true,
+            terca: true,
+            quarta: true,
+            quinta: true,
+            sexta: true,
+            sabado: true
+        }],
         services:[],
         state:"",
         street:""
     })
-
-    //type FormData = z.infer<typeof configSchema>;    
-   
-    //   const form = useForm<FormData>({
-    //     resolver: zodResolver(configSchema),
-    //     defaultValues: {
-    //         id: "",
-    //         name: "",
-    //         state: "",
-    //         city: "",
-    //         street: "",
-    //         number: undefined,
-    //         services: [ {
-    //             vehicleTypeId: "",
-    //             amount: undefined,
-    //             price: undefined,
-    //             describe: ""
-    //         }],
-    //         schedule: [{
-    //             diasSelecionados: [{
-    //                 domingo: false,
-    //                 segunda: true,
-    //                 terca: true,
-    //                 quarta: true,
-    //                 quinta: true,
-    //                 sexta: true,
-    //                 sabado: true,
-    //             }],
-    //             abertura: "",
-    //             encerramento: ""
-    //         }]
-    //       },
-    //   });
     
     type newService = {
         vehicleTypeId: string
@@ -71,7 +41,7 @@ export default function FormConfig() {
         amount: string
         price: string
     }
-    
+        
     const [servico, setServico] = useState<newService>({
         vehicleTypeId:"1",
         amount:"",
@@ -79,51 +49,113 @@ export default function FormConfig() {
         price:""
     });
 
+    const [diasSemana, setDiasSemana] = useState<string[]>([])
+
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const data = {
+    const data = [{
         garageId: 1,
         vehicleTypeId: 1,
         descVehicleType: "Carro",
         amount: 30,
         price: 5
+    }]
+
+    const handleUpdateDias = () => {       
+
+        setGarage(prevGarage => ({
+            ...prevGarage,
+            schedules: [{domingo: diasSemana.includes('domingo'),
+                segunda: diasSemana.includes('segunda'),
+                terca: diasSemana.includes('terca'),
+                quarta: diasSemana.includes('quarta'),
+                quinta: diasSemana.includes('quinta'),
+                sexta: diasSemana.includes('sexta'),
+                sabado: diasSemana.includes('sabado')}]
+        }));
+        
+        // Use um callback para garantir que o estado foi atualizado
+        setGarage(prevGarage => {
+            return prevGarage;
+        });
     }
 
     const handleSubmit = () => {
-        console.log("Clicou em salvar");
-        
+        console.log("Clicou em salvar");            
         console.log(garage);        
     }
 
     const handleAddTipo = () => {
-        setGarage((prevGarage?) => {
-            // Garante que prevGarage e prevGarage.services estão inicializados
-            const services = prevGarage?.services || [];
-    
-            // Encontra o índice do serviço com o mesmo vehicleTypeId
-            const serviceIndex = services.findIndex(
-                (item) => item.vehicleTypeId === servico?.vehicleTypeId
-            );
-    
-            if (serviceIndex !== -1) {
-                // Serviço existe, atualiza
-                const updatedServices = [...services];
-                updatedServices[serviceIndex] = servico; // Substitui o serviço pelo novo
-    
-                return {
-                    ...prevGarage,
-                    services: updatedServices,
-                };
-            } else {
-                // Serviço não existe, adiciona
-                return {
-                    ...prevGarage,
-                    services: [...services, servico],
-                };
-            }
+        if (servico.vehicleTypeId === '') {
+          console.log("Vazio");
+          return;
+        }
+      
+        const typeVehicle = servico.vehicleTypeId;
+        let descricao: string;
+      
+        switch (typeVehicle) {
+          case "1":
+            descricao = "Moto";
+            break;
+          case "2":
+            descricao = "Carro";
+            break;
+          case "3":
+            descricao = "Caminhonete";
+            break;
+          case "4":
+            descricao = "Caminhão";
+            break;
+          default:
+            descricao = "";
+            break;
+        }
+      
+        // Atualiza o serviço com a descrição correta localmente
+        const updatedServico = {
+          ...servico,
+          describe: descricao,
+        };
+      
+        console.log(descricao); // Verifica se a descrição está correta
+        console.log(updatedServico); // Verifica o objeto atualizado
+      
+        // Atualiza o estado da garagem
+        setGarage((prevGarage) => {
+          const services = prevGarage?.services || [];
+          const serviceIndex = services.findIndex(
+            (item) => item.vehicleTypeId === updatedServico.vehicleTypeId
+          );
+      
+          if (serviceIndex !== -1) {
+            // Serviço existe, atualiza
+            const updatedServices = [...services];
+            updatedServices[serviceIndex] = updatedServico;
+      
+            return {
+              ...prevGarage,
+              services: updatedServices,
+            };
+          } else {
+            // Serviço não existe, adiciona
+            return {
+              ...prevGarage,
+              services: [...services, updatedServico],
+            };
+          }
         });
-    };
+      
+        // Redefine o estado do serviço
+        setServico({
+          amount: "",
+          describe: "",
+          price: "",
+          vehicleTypeId: "",
+        });
+      };
+      
 
     async function onSubmit(values: FormData) {                              
           
@@ -141,228 +173,13 @@ export default function FormConfig() {
           setIsLoading(false); // Finaliza o carregamento
         }
       }
+
+    useEffect(() => {         
+        handleUpdateDias()
+    }, [diasSemana])
     
     return (
-        <div className="my-2">
-            {/* <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="flex justify-around">
-                    
-                    <div className="w-[45%]">
-                        
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Nome</FormLabel>
-                                <FormControl>
-                                <Input {...field} placeholder="Digite o nome do estabelecimento" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                        <div className="flex ">
-                            <div className="w-[95%] mr-2">
-                               
-                                <FormField
-                                    control={form.control}
-                                    name="street"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Logradouro</FormLabel>
-                                        <FormControl>
-                                        <Input {...field} placeholder="Digite o nome rua" />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                    )}
-                                />
-                            </div>
-                            
-                            <div>
-                                
-                                <FormField
-                                    control={form.control}
-                                    name="number"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Número</FormLabel>
-                                        <FormControl>
-                                        <Input {...field} placeholder="Digite o número" />
-                                        </FormControl>
-                                    </FormItem>
-                                    )}
-                                />
-                            </div>        
-                            
-                        </div>
-
-                        <div className="flex border-b-2 pb-4">
-                            <div className="w-[95%] mr-2">
-                                
-                                <FormField
-                                    control={form.control}
-                                    name="city"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Cidade</FormLabel>
-                                        <FormControl>
-                                        <Input {...field} placeholder="Digite a cidade da garagem" />
-                                        </FormControl>
-                                    </FormItem>
-                                    )}
-                                />     
-                            </div>
-                            
-                            <div>
-                               
-                                <FormField
-                                    control={form.control}
-                                    name="state"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Estado</FormLabel>
-                                        <FormControl>
-                                        <Input {...field} placeholder="Digite o estado" />
-                                        </FormControl>
-                                    </FormItem>
-                                    )}
-                                />    
-                            </div>        
-                            
-                        </div>  
-                        
-                        <div className="mt-6">                        
-
-                            
-                            <FormField
-                                control={form.control}
-                                name="schedule"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Dias de Funcionamento</FormLabel>
-                                    <FormControl >
-                                    <ToggleDias />
-                                    </FormControl>
-                                </FormItem>
-                                )}
-                            /> 
-
-                            <div className="flex justify-between">
-                                <div className="mt-2 w-[45%]">
-                                    
-                                    <FormField
-                                        control={form.control}
-                                        name="schedule"
-                                        render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Abertura</FormLabel>
-                                            <FormControl>
-                                             <Input {...field} placeholder="Horário de abertura" /> 
-                                            </FormControl>
-                                        </FormItem>
-                                        )}
-                                    />     
-                                </div>
-                                
-                                <div className="mt-2 w-[45%]">
-                                    
-                                    <FormField
-                                        control={form.control}
-                                        name="schedule"
-                                        render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Fechamento</FormLabel>
-                                            <FormControl>
-                                            <Input {...field} placeholder="Horário de fechamento" />
-                                            </FormControl>
-                                        </FormItem>
-                                        )}
-                                    />    
-                                </div>                                                                 
-                                
-                            </div>
-                        </div>    
-
-                                                                                                          
-                    </div>
-                    
-                                      
-                    <div className="w-[45%]">
-                    <div className="">                        
-
-                        
-                        <FormField
-                            control={form.control}
-                            name="services"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Tipos de Veículo</FormLabel>
-                                <FormControl>
-                                 <SelectTypesVehicles />  
-                                </FormControl>
-                            </FormItem>
-                            )}
-                        /> 
-
-                        <div className="flex justify-between mb-4 border-b-2 pb-4">
-                            <div className="mt-2">
-                                
-                                <FormField
-                                    control={form.control}
-                                    name="schedule"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Quantidade de Vagas</FormLabel>
-                                        <FormControl>
-                                        <Input {...field} placeholder="Vagas disponíveis" />
-                                        </FormControl>
-                                    </FormItem>
-                                    )}
-                                />     
-                            </div>
-                            
-                            <div className="mt-2">
-                                
-                                <FormField
-                                    control={form.control}
-                                    name="schedule"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Valor</FormLabel>
-                                        <FormControl>
-                                        <Input {...field} placeholder="Valor da hora" />
-                                        </FormControl>
-                                    </FormItem>
-                                    )}
-                                />    
-                            </div>
-
-                            <div className=" flex mt-2 items-end">
-                                <Button className="items-end" type="submit" disabled={isLoading}> {isLoading ? <Spinner /> : "Adicionar"} </Button>
-                            </div>  
-
-          
-    
-                            </div>
-                        </div>    
-                       <DataTable columns={columns} data={data} />
-                    </div>
-                    
-                </div>
-
-  
-              <DialogFooter>
-                <div className="flex justify-end w-[100%] border-t-2 p-4 mx-6">
-                    <Button className="w-32" type="submit" disabled={isLoading}> {isLoading ? <Spinner /> : "Salvar"} </Button>        
-                </div>
-                
-              </DialogFooter>
-            </form>
-          </Form> */}
-
+        <div className="my-2">           
 
                  <div className="flex justify-around">
                     
@@ -407,21 +224,25 @@ export default function FormConfig() {
 
                             
                             <Label >Disponibilidade</Label>
-                            <ToggleDias />
+                            <ToggleDias field={{
+                                value: diasSemana || '', // Valor atual do estado `servico`
+                                onChange: (value) => setDiasSemana(value), // Atualiza `servico` no estado
+                                onBlur: () => {}, // Caso necessário, adicione lógica de validação ou manipulação ao desfocar
+                            }} />
 
 
                             <div className="flex justify-between">
                                 <div className="mt-2 w-[45%]">
                                     
                                     <Label htmlFor="abertura">Abertura</Label>
-                                    <Input id="abertura" placeholder="Horário de abertura" />
+                                    <Input id="abertura" value={garage?.abertura || ''} onChange={(e) => setGarage({...garage, abertura: e.target.value})} placeholder="Horário de abertura" />
  
                                 </div>
                                 
                                 <div className="mt-2 w-[45%]">
                                     
                                     <Label htmlFor="encerramento">Encerramento</Label>
-                                    <Input id="encerramento" placeholder="Horário de fechamento" />
+                                    <Input id="encerramento" value={garage?.encerramento || ''} onChange={(e) => setGarage({...garage, encerramento: e.target.value})} placeholder="Horário de fechamento" />
   
                                 </div>                                                                 
                                 
@@ -469,7 +290,7 @@ export default function FormConfig() {
     
                             </div>
                         </div>    
-                       <DataTable columns={columns} data={data} />
+                       <DataTable columns={columns} data={garage.services} />
                     </div>
                     
                 </div>
@@ -483,203 +304,3 @@ export default function FormConfig() {
         </div>
     )
 }
-
-// 'use client';
-
-// import { z } from "zod";
-// import { useForm, useFieldArray } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-// import { Input } from "../ui/input";
-// import { Button } from "../ui/button";
-// import Spinner from "./Spinner";
-// import { SelectTypesVehicles } from "./SelectTypesVehicles";
-// import { DataTable } from "@/app/loja/configuracao/data-table";
-// import { columns } from "@/app/loja/configuracao/columns";
-// import { ToggleDias } from "@/app/loja/configuracao/ToggleDias";
-// import { configSchema } from "@/app/loja/configuracao/configSchema";
-
-// export default function FormConfig() {
-//   type FormData = z.infer<typeof configSchema>;
-
-//   const form = useForm<FormData>({
-//     resolver: zodResolver(configSchema),
-//     defaultValues: {
-//       id: "",
-//       name: "",
-//       state: "",
-//       city: "",
-//       street: "",
-//       number: undefined,
-//       services: [
-//         {
-//           vehicleTypeId: "",
-//           describe: "",
-//           amount: undefined,
-//           price: undefined,
-//         },
-//       ],
-//       schedule: [
-//         {
-//           diasSelecionados: [{
-//             domingo: false,
-//             segunda: false,
-//             terca: false,
-//             quarta: false,
-//             quinta: false,
-//             sexta: false,
-//             sabado: false,
-//           }],
-//           abertura: "",
-//           encerramento: "",
-//         },
-//       ],
-//     },
-//   });
-
-//   const { fields: serviceFields, append: appendService } = useFieldArray({
-//     control: form.control,
-//     name: "services",
-//   });
-
-//   const { fields: scheduleFields, append: appendSchedule } = useFieldArray({
-//     control: form.control,
-//     name: "schedule",
-//   });
-
-//   const onSubmit = async (values: FormData) => {
-//     console.log("Submitted Data:", values);
-//   };
-
-//   return (
-//     <div className="my-2">
-//       <Form {...form}>
-//         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-//           <div className="flex justify-between">
-//             <div className="w-[45%]">
-//               {/* Dados Básicos */}
-//               <FormField
-//                 control={form.control}
-//                 name="name"
-//                 render={({ field }) => (
-//                   <FormItem>
-//                     <FormLabel>Nome</FormLabel>
-//                     <FormControl>
-//                       <Input {...field} placeholder="Digite o nome do estabelecimento" />
-//                     </FormControl>
-//                     <FormMessage />
-//                   </FormItem>
-//                 )}
-//               />
-
-//               {/* Endereço */}
-//               <FormField
-//                 control={form.control}
-//                 name="street"
-//                 render={({ field }) => (
-//                   <FormItem>
-//                     <FormLabel>Logradouro</FormLabel>
-//                     <FormControl>
-//                       <Input {...field} placeholder="Digite o nome da rua" />
-//                     </FormControl>
-//                     <FormMessage />
-//                   </FormItem>
-//                 )}
-//               />
-
-//               {/* Tabela de Serviços */}
-//               <div className="mt-6">
-//                 <h4>Serviços</h4>
-//                 {serviceFields.map((service, index) => (
-//                   <div key={service.id} className="flex items-center space-x-4">
-//                     <FormField
-//                       control={form.control}
-//                       name={`services.${index}.vehicleTypeId`}
-//                       render={({ field }) => (
-//                         <FormItem>
-//                           <FormLabel>Tipo de Veículo</FormLabel>
-//                           <FormControl>
-//                             <SelectTypesVehicles field={field} />
-//                           </FormControl>
-//                           <FormMessage />
-//                         </FormItem>
-//                       )}
-//                     />
-//                     <FormField
-//                       control={form.control}
-//                       name={`services.${index}.amount`}
-//                       render={({ field }) => (
-//                         <FormItem>
-//                           <FormLabel>Quantidade</FormLabel>
-//                           <FormControl>
-//                             <Input {...field} placeholder="Quantidade" />
-//                           </FormControl>
-//                           <FormMessage />
-//                         </FormItem>
-//                       )}
-//                     />
-//                   </div>
-//                 ))}
-//                 <Button
-//                   type="button"
-//                   onClick={() => appendService({ vehicleTypeId: "", describe: "", amount: 0, price: 0 })}
-//                 >
-//                   Adicionar Serviço
-//                 </Button>
-//               </div>
-//             </div>
-
-//             <div className="w-[45%]">
-//               {/* Horários */}
-//               <div className="mt-6">
-//                 <h4>Horários</h4>
-//                 {scheduleFields.map((schedule, index) => (
-//                   <div key={schedule.id} className="flex items-center space-x-4">
-//                     {/* <FormField
-//                         control={form.control}
-//                         name={`schedule.${index}.diasSelecionados`} // Objeto com chaves dos dias
-//                         render={({ field }) => (
-//                             <FormItem>
-//                             <FormLabel>Dias da Semana</FormLabel>
-//                             <FormControl>
-//                                 <ToggleDias field={field} />
-//                             </FormControl>
-//                             <FormMessage />
-//                             </FormItem>
-//                         )}
-//                     /> */}
-//                     <FormField
-//                       control={form.control}
-//                       name={`schedule.${index}.abertura`}
-//                       render={({ field }) => (
-//                         <FormItem>
-//                           <FormLabel>Abertura</FormLabel>
-//                           <FormControl>
-//                             <Input {...field} placeholder="00:00" />
-//                           </FormControl>
-//                           <FormMessage />
-//                         </FormItem>
-//                       )}
-//                     />
-//                   </div>
-//                 ))}
-//                 <Button
-//                   type="button"
-//                   onClick={() => appendSchedule({ diasSelecionados: [], abertura: "", encerramento: "" })}
-//                 >
-//                   Adicionar Horário
-//                 </Button>
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Botão de Enviar */}
-//           <div className="flex justify-end">
-//             <Button type="submit">Salvar</Button>
-//           </div>
-//         </form>
-//       </Form>
-//     </div>
-//   );
-// }
-

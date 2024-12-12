@@ -45,17 +45,21 @@ export type diasSelecionado = {
     sabado: boolean
 }
 
-export type service = {
-    vehicleTypeId: string
-    describe: string
-    amount: string
-    price: string
+export type serviceType = {
+    vehicleTypeId?: string
+    describe?: string
+    amount?: string
+    price?: string
 }
 
 export type schedule = {
-    abertura: string
-    encerramento: string
-    diasSelecionados?: diasSelecionado[]
+    domingo: boolean
+    segunda: boolean 
+    terca: boolean 
+    quarta: boolean 
+    quinta: boolean 
+    sexta: boolean 
+    sabado: boolean
 }
   
 export type Garagem = {
@@ -64,7 +68,9 @@ export type Garagem = {
     state?: string
     city?: string
     street?: string
-    number?: string   
-    services?: service[]
+    number?: string 
+    abertura: string
+    encerramento: string  
+    services: serviceType[]
     schedules?: schedule[]
 }

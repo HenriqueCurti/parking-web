@@ -3,9 +3,17 @@ import {
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
 
-export function ToggleDias() {
+type ToggleDiasProps = {
+  field: {
+    value: string[],
+    onChange: (value: string[]) => void;
+    onBlur: () => void;
+  }    
+}
+
+export function ToggleDias({field}: ToggleDiasProps) {
   return (
-    <ToggleGroup variant="outline" type="multiple">
+    <ToggleGroup value={field.value} onValueChange={field.onChange} variant="outline" type="multiple">
       <ToggleGroupItem className="w-[14%]" value="domingo">
         Domingo
       </ToggleGroupItem>
