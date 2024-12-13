@@ -17,6 +17,11 @@ export default async function registerAction (form: formData){
         } 
     }
 
+    return {
+        success: true,
+        message: 'Cadastrado!'
+    } 
+
     // const user = await db.user.findFirst({
     //     where: {
     //         email: form.email
