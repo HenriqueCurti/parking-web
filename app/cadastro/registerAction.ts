@@ -23,32 +23,32 @@ export default async function registerAction (form: formData){
     //     } 
     // });
 
-    const user = null;
+    // const user = null;
 
-    if(user){
-        return {
-            success: false,
-            message: 'Usuário já cadastrado!'
-        } 
-    }
+    // if(user){
+    //     return {
+    //         success: false,
+    //         message: 'Usuário já cadastrado!'
+    //     } 
+    // }
 
-    try {
-        const res = await db.user.create({
-            data: {
-                name: form.email,
-                email: form.email,
-                passhashed: hashSync(form.password)
-            }
-        })
+    // try {
+    //     const res = await db.user.create({
+    //         data: {
+    //             name: form.email,
+    //             email: form.email,
+    //             passhashed: hashSync(form.password)
+    //         }
+    //     })
 
-        return {
-            success: true,
-            message: ""
-        };
-    } catch (error) {
-        return {
-            success: false,
-            message: "Ops, Algo inesperado aconteceu!"
-        }       
-    }   
+    //     return {
+    //         success: true,
+    //         message: ""
+    //     };
+    // } catch (error) {
+    //     return {
+    //         success: false,
+    //         message: "Ops, Algo inesperado aconteceu!"
+    //     }       
+    // }   
 }
