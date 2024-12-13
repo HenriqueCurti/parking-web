@@ -23,9 +23,7 @@ import registerAction from '@/app/cadastro/registerAction';
 
 type formData = z.infer<typeof authSchema>;
 
-export const FormLogin = () => {
-
-    const [state, formeAction, isPending] = useActionState(registerAction, null);
+export const FormLogin = () => {   
 
     const form = useForm<z.infer<typeof authSchema>>({
         resolver: zodResolver(authSchema),

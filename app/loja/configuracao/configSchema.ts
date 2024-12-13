@@ -46,10 +46,10 @@ export type diasSelecionado = {
 }
 
 export type serviceType = {
-    vehicleTypeId?: string
+    vehicleTypeId?: number
     describe?: string
-    amount?: string
-    price?: string
+    amount?: number
+    price?: number
 }
 
 export type schedule = {
@@ -63,12 +63,12 @@ export type schedule = {
 }
   
 export type Garagem = {
-    id?: string
+    id?: number
     name?: string
     state?: string
     city?: string
     street?: string
-    number?: string 
+    number?: number 
     abertura: string
     encerramento: string  
     services: serviceType[]

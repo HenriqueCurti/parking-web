@@ -12,19 +12,20 @@ import {
 
 type SelectTypesVehiclesProps = {
   field: {
-    value: string;
+    value: number;
     onChange: (value: string) => void;
     onBlur: () => void;
+    className: string;
   };
 };
 
 export function SelectTypesVehicles({ field }: SelectTypesVehiclesProps) {
   return (
     <Select
-      value={field.value}
+      value={String(field.value)}
       onValueChange={field.onChange}
     >
-      <SelectTrigger>
+      <SelectTrigger className={field.className}>
         <SelectValue placeholder="Selecione o tipo de veículo" />
       </SelectTrigger>
       <SelectContent>
